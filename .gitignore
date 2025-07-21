@@ -1,0 +1,5 @@
+# Ignorar o arquivo binário da biblioteca libft
+libft/libft.a
+
+# Ignorar o executável minishell
+minishell
