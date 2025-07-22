@@ -6,7 +6,7 @@
 /*   By: sabsanto <sabsanto@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 14:34:21 by sabsanto          #+#    #+#             */
-/*   Updated: 2025/07/10 14:55:08 by sabsanto         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:22:41 by sabsanto         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,11 @@ char	*extract_quoted_token(char *input, int *i)
 	start = *i;
 	while (input[*i] && input[*i] != quote_type)
 		(*i)++;
+	if (input[*i] != quote_type)
+	{
+		write(2, "minishell: syntax error: unclosed quotes\n", 42);
+		return (NULL);
+	}
 	len = *i - start;
 	token = malloc(len + 1);
 	if (!token)

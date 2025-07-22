@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: makamins <makamins@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sabsanto <sabsanto@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 10:02:10 by makamins          #+#    #+#             */
-/*   Updated: 2025/07/14 16:01:02 by makamins         ###   ########.fr       */
+/*   Updated: 2025/07/21 21:12:02 by sabsanto         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ bool	is_valid_id_export(const char *key)
 
 	if (!key || key[0] == '\0')
 		return (false);
-	if (!(ft_isalpha(key[0]) || key[0] == '_'))
+	if (!(ft_isalpha(key[0]) || key[0] != '_'))
 		return (false);
 	i = 0;
 	while (key[i] && key[i] != '=')

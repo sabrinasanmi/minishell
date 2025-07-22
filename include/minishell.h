@@ -23,6 +23,9 @@
 # include "libft.h"
 # include "garbage_collector.h"
 
+/* Variável global para ambiente */
+extern char **__environ;
+
 // struct de redirecionamentos
 typedef enum e_redir_type
 {
@@ -74,18 +77,30 @@ typedef struct s_minishell
 	t_garbage	*gc;
 }	t_minishell;
 
-/* Protótipos das funções*/
+/* Protótipos das funções de parsing */
+void	tokenize(char *input);
+char	*handle_single_quotes(char *input, int *i);
+char	*handle_double_quotes(char *input, int *i, t_minishell *mini);
+
+/* Protótipos das funções de expansão */
+char	*expand_variables(char *str, t_minishell *mini);
+char	*extract_var_name(char *str, int *pos, t_garbage **gc);
+char	*get_var_value(char *var_name, t_minishell *mini);
+char	*extract_raw_content(char *input, int start, int len, t_garbage **gc);
+
+/* Protótipos das funções auxiliares de string */
+char	*join_strings(char *s1, char *s2, t_garbage **gc);
+char	*append_char(char *str, char c, t_garbage **gc);
+
+/* Protótipos existentes */
 char 	is_space(char c);
 char	is_operator(char c);
-void	tokenize(char *input);
-char	*extract_quoted_token(char *input, int *i);
-
 bool	is_numeric_arg(char *str);
 int		ft_atol(const char *nbr);
-char	is_space(char c);
-char	is_operator(char c);
 char	*ft_strjoin_and_free(char *s1, char *s2, int free_s);
 
+/* Funções de ambiente */
+void		init_env_list(t_minishell *mini, char **envp);
 void		update_env_value(t_env *found,
 const char	*value, t_garbage **gc);
 void		append_env_node(t_env **env, t_env *new);
@@ -95,6 +110,8 @@ t_env		*find_env_key(t_env *env, const char *key);
 t_env		*create_env_node(const char *key,
 const char	*value, t_garbage **gc);
 char		*get_env_value(t_env *env, const char *key);
+
+/* Builtins */
 int		ft_cd(char **argv, t_minishell *mini);
 int		ft_echo(char **argv, t_minishell *mini);
 int		ft_env(t_minishell *mini);
