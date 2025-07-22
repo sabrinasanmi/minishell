@@ -6,7 +6,7 @@
 /*   By: sabsanto <sabsanto@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 20:04:28 by sabsanto          #+#    #+#             */
-/*   Updated: 2025/07/21 21:23:01 by sabsanto         ###   ########.fr       */
+/*   Updated: 2025/07/22 20:12:25 by sabsanto         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,23 +42,27 @@ static void	process_quoted_token(char *input, int *i, t_minishell *mini)
 	free(token);
 }
 
-static void	process_word_token(char *input, int *i, int len)
+static void	process_word_token(char *input, int *i, int len, t_minishell *mini)
 {
 	int		start;
 	int		tok_len;
 	char	*token;
+	char	*expanded;
 
 	start = *i;
 	while (*i < len && !is_space(input[*i]) && !is_operator(input[*i])
 		&& input[*i] != '\'' && input[*i] != '"')
 		(*i)++;
 	tok_len = *i - start;
-	token = malloc(tok_len + 1);
+	token = gc_malloc(tok_len + 1, &mini->gc);
 	if (!token)
 		return ;
 	ft_strlcpy(token, &input[start], tok_len + 1);
-	printf("Token: %s\n", token);
-	free(token);
+	expanded = expand_variables(token, mini);
+	if (expanded)
+		printf("Token: %s\n", expanded);
+	else
+		printf("Token: %s\n", token);
 }
 
 void	tokenize(char *input)
@@ -82,7 +86,7 @@ void	tokenize(char *input)
 		else if (input[i] == '\'' || input[i] == '"')
 			process_quoted_token(input, &i, &mini);
 		else
-			process_word_token(input, &i, len);
+			process_word_token(input, &i, len, &mini);
 	}
 	gc_free_all(&mini.gc);
 }
