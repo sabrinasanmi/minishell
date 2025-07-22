@@ -79,8 +79,9 @@ typedef struct s_minishell
 
 /* Protótipos das funções de parsing */
 void	tokenize(char *input);
-char	*handle_single_quotes(char *input, int *i);
+char	*handle_single_quotes(char *input, int *i, t_minishell *mini);
 char	*handle_double_quotes(char *input, int *i, t_minishell *mini);
+char	*extract_quoted_token(char *input, int *i, t_minishell *mini);
 
 /* Protótipos das funções de expansão */
 char	*expand_variables(char *str, t_minishell *mini);

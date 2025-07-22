@@ -6,13 +6,13 @@
 /*   By: sabsanto <sabsanto@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/21 21:21:58 by sabsanto          #+#    #+#             */
-/*   Updated: 2025/07/21 21:23:21 by sabsanto         ###   ########.fr       */
+/*   Updated: 2025/07/22 20:47:44 by sabsanto         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char	*handle_single_quotes(char *input, int *i)
+char	*handle_single_quotes(char *input, int *i, t_minishell *mini) 
 {
 	int		start;
 	int		len;
@@ -28,7 +28,7 @@ char	*handle_single_quotes(char *input, int *i)
 		return (NULL);
 	}
 	len = *i - start;
-	token = malloc(len + 1);
+	token = gc_malloc(len + 1, &mini->gc);
 	if (!token)
 		return (NULL);
 	ft_strlcpy(token, &input[start], len + 1);

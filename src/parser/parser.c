@@ -6,7 +6,7 @@
 /*   By: sabsanto <sabsanto@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 20:04:28 by sabsanto          #+#    #+#             */
-/*   Updated: 2025/07/22 20:12:25 by sabsanto         ###   ########.fr       */
+/*   Updated: 2025/07/22 20:46:19 by sabsanto         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ static void	process_quoted_token(char *input, int *i, t_minishell *mini)
 	char	*token;
 
 	if (input[*i] == '\'')
-		token = handle_single_quotes(input, i);
+		token = handle_single_quotes(input, i, mini);
 	else if (input[*i] == '"')
 		token = handle_double_quotes(input, i, mini);
 	else
@@ -39,7 +39,6 @@ static void	process_quoted_token(char *input, int *i, t_minishell *mini)
 	if (!token)
 		return ;
 	printf("Token: %s\n", token);
-	free(token);
 }
 
 static void	process_word_token(char *input, int *i, int len, t_minishell *mini)
