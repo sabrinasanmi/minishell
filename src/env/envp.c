@@ -6,7 +6,7 @@
 /*   By: makamins <makamins@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 14:25:19 by makamins          #+#    #+#             */
-/*   Updated: 2025/07/17 12:51:41 by makamins         ###   ########.fr       */
+/*   Updated: 2025/07/30 16:35:59 by makamins         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ void	init_env_list(t_minishell *mini, char **envp)
 	while (envp[i])
 	{
 		sep = ft_strchr(envp[i], '=');
-		if (!envp)
+		if (!sep)
 		{
 			i++;
 			continue;

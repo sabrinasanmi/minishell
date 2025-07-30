@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_main.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sabsanto <sabsanto@student.42.fr>          +#+  +:+       +#+        */
+/*   By: makamins <makamins@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 18:49:25 by sabsanto          #+#    #+#             */
-/*   Updated: 2025/07/10 14:40:25 by sabsanto         ###   ########.fr       */
+/*   Updated: 2025/07/30 17:37:00 by makamins         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include "garbage_collector.h"
 
 int	main(void)
 {
@@ -35,4 +36,3 @@ int	main(void)
 	}
 	return (0);
 }
-

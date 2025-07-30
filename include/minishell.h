@@ -8,12 +8,12 @@
 # include <string.h>
 # include <stdbool.h>
 # include <stdarg.h>
+# include <sys/wait.h>
 
 # include <readline/readline.h>
 # include <readline/history.h>
 
-/*Includes de sistema que vamos usar em breve*/
-/*# include <sys/wait.h>
+/*Includes de sistema que vamos usar em breve
 # include <sys/stat.h>
 # include <fcntl.h>
 # include <signal.h>
@@ -53,12 +53,12 @@ typedef struct s_redir
 	struct s_redir  *next;   // lista encadeada de redirecionamentos
 }	t_redir;
 
-typedef struct s_comands
+typedef struct s_commands
 {
 	char            **argv;      // vetor de strings: nome do comando e argumentos
 	t_redir         *redir;     // lista de redirecionamentos
-	struct s_comands *next;     // próximo comando (para pipeline)
-}	t_comands;
+	struct s_commands *next;     // próximo comando (para pipeline)
+}	t_commands;
 
 typedef struct s_env
 {
@@ -69,7 +69,7 @@ typedef struct s_env
 
 typedef struct s_minishell
 {
-	t_comands	*comands;	// lista de comandos (um por pipe)
+	t_commands	*commands;	// lista de comandos (um por pipe)
 	t_env		*env;		// lista de variáveis de ambiente
 	int			last_exit;	//código de saída do último comando executado
 	int			in_fd;		// STDIN original (para restaurar)
@@ -129,5 +129,13 @@ int		ft_unset(char **argv, t_minishell *mini);
 t_env	*copy_env_node(t_env *src, t_garbage **gc);
 void	insert_sorted_env_node(t_env **sorted, t_env *new_node);
 void	print_export_error(char *arg);
+
+char **env_list_to_array(t_env *env, t_garbage **gc);
+char	*get_cmd_path(char *cmd, t_env *env, t_garbage **gc);
+
+int		exec_cmd(char **args, t_env *env, t_garbage **gc);
+void	init_env_list(t_minishell *mini, char **envp);
+void	exec_input(char *input, t_minishell *mini);
+void	free_array(char **arr);
 
 #endif // MINISHELL_H

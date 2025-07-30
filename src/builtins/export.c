@@ -6,7 +6,7 @@
 /*   By: sabsanto <sabsanto@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 10:02:10 by makamins          #+#    #+#             */
-/*   Updated: 2025/07/21 21:12:02 by sabsanto         ###   ########.fr       */
+/*   Updated: 2025/07/30 17:48:21 by sabsanto         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,11 +24,21 @@ bool	is_valid_id_export(const char *key)
 	i = 0;
 	while (key[i] && key[i] != '=')
 	{
-		if (!(ft_isalnum(key[i]) || key[i] != '_'))
+		if (!(ft_isalnum(key[i]) || key[i] == '_'))
 				return (false);	
 		i++;
 	}
 	return (true);
+}
+
+void	print_env_line(t_env *node)
+{
+	if (!node || !node->key)
+		return ;
+	printf("declare -x %s", node->key);
+	if (node->value)
+		printf("=\"%s\"", node->value);
+	printf("\n");
 }
 
 void	print_sorted_env(t_env *env, t_minishell *mini)
@@ -37,25 +47,27 @@ void	print_sorted_env(t_env *env, t_minishell *mini)
 	t_env	*curr;
 	t_env	*node_copy;
 	
-	if (!env)
+	if (!env || !mini)
 		return ;
 	sorted_list = NULL;
 	curr = env;
 	while (curr)
 	{
-		node_copy = copy_env_node(curr, &mini->gc);
-		insert_sorted_env_node(&sorted_list, node_copy);
+		if (curr->key)
+		{
+			node_copy = copy_env_node(curr, &mini->gc);
+			if (node_copy && node_copy->key)
+				insert_sorted_env_node(&sorted_list, node_copy);
+		}
 		curr = curr->next;
 	}
 	curr = sorted_list;
-	while (curr)
+	while (sorted_list)
 	{
-		printf("declare -x %s", curr->key);
-		if (curr->value != NULL)
-			printf("=\"%s\"", curr->value);
-		printf("\n");
-		curr = curr->next;
+		print_env_line(sorted_list);
+		sorted_list = sorted_list->next;
 	}
+	
 }
 
 int	process_key(char *arg, t_minishell *mini)

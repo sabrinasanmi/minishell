@@ -6,7 +6,7 @@
 /*   By: makamins <makamins@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 17:04:12 by makamins          #+#    #+#             */
-/*   Updated: 2025/07/14 15:29:29 by makamins         ###   ########.fr       */
+/*   Updated: 2025/07/30 17:33:00 by makamins         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,9 @@ t_env	*create_env_node(const char *key,
 	const char *value, t_garbage **gc)
 {
 	t_env	*node;
-
+	
+	if (!key || !gc)
+		return (NULL);
 	node = gc_malloc(sizeof(t_env), gc);
 	if (!node)
 		return (NULL);
@@ -36,10 +38,15 @@ t_env	*create_env_node(const char *key,
 	if (!node->key)
 		return (NULL);
 	ft_strlcpy(node->key, key, ft_strlen(key) + 1);
-	node->value = gc_malloc(ft_strlen(value) + 1, gc);
-	if (!node->value)
-		return (NULL);
-	ft_strlcpy(node->value, value, ft_strlen(value) + 1);
+	if (value)
+	{
+		node->value = gc_malloc(ft_strlen(value) + 1, gc);
+		if (!node->value)
+			return (NULL);
+		ft_strlcpy(node->value, value, ft_strlen(value) + 1);
+	}
+	else
+		node->value = NULL;
 	node->next = NULL;
 	return (node);
 }
@@ -91,6 +98,28 @@ void	set_env_value(t_env **env,
 	}
 }
 
+void	exec_input(char *input, t_minishell *mini)
+{
+	char	**args;
+
+	args = ft_split(input, ' '); // isso aqui é temporário, até ter parser completo
+	if (!args || !args[0])
+	{
+		if (args)
+			free_array(args); // ← necessário se args foi alocado!
+		return ;
+	}
+	if (strcmp(args[0], "env") == 0)
+		ft_env(mini);
+	else if (strcmp(args[0], "export") == 0)
+		ft_export(args, mini);
+	else if (strcmp(args[0], "unset") == 0)
+		ft_unset(args, mini);
+	else
+		exec_cmd(args, mini->env, &mini->gc); // executa comando externo
+
+	free_array(args);
+}
 /*
 ** Funções utilitárias para manipulação da lista de variáveis de ambiente.
 ** - create_env_node: cria um novo nó com key e value usando gc_malloc.
