@@ -6,7 +6,7 @@
 /*   By: sabsanto <sabsanto@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/21 21:24:01 by sabsanto          #+#    #+#             */
-/*   Updated: 2025/07/21 21:24:13 by sabsanto         ###   ########.fr       */
+/*   Updated: 2025/07/30 17:32:53 by sabsanto         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,23 +37,33 @@ char	*extract_raw_content(char *input, int start, int len, t_garbage **gc)
 	return (content);
 }
 
+static char	*create_empty_string(t_garbage **gc)
+{
+	char	*str;
+
+	str = gc_malloc(1, gc);
+	if (str)
+		str[0] = '\0';
+	return (str);
+}
+
 char	*get_var_value(char *var_name, t_minishell *mini)
 {
 	char	*value;
 	char	*exit_str;
 
 	if (!var_name)
-		return (gc_malloc(1, &mini->gc));
+		return (create_empty_string(&mini->gc));
 	if (ft_strncmp(var_name, "?", 2) == 0)
 	{
 		exit_str = ft_itoa(mini->last_exit);
 		if (!exit_str)
-			return (gc_malloc(1, &mini->gc));
+			return (create_empty_string(&mini->gc));
 		value = gc_malloc(ft_strlen(exit_str) + 1, &mini->gc);
 		if (!value)
 		{
 			free(exit_str);
-			return (gc_malloc(1, &mini->gc));
+			return (create_empty_string(&mini->gc));
 		}
 		ft_strlcpy(value, exit_str, ft_strlen(exit_str) + 1);
 		free(exit_str);
@@ -61,7 +71,7 @@ char	*get_var_value(char *var_name, t_minishell *mini)
 	}
 	value = get_env_value(mini->env, var_name);
 	if (!value)
-		return (gc_malloc(1, &mini->gc));
+		return (create_empty_string(&mini->gc));
 	return (value);
 }
 
