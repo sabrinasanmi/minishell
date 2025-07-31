@@ -6,7 +6,7 @@
 /*   By: makamins <makamins@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 16:56:34 by makamins          #+#    #+#             */
-/*   Updated: 2025/07/30 16:10:35 by makamins         ###   ########.fr       */
+/*   Updated: 2025/07/30 18:16:12 by makamins         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,13 +18,13 @@ t_env	*copy_env_node(t_env *src, t_garbage **gc)
 	t_env	*new_node;
 	size_t	key_len;
 	size_t	value_len;
-	
+
 	if (!src || !src->key)
 		return (NULL);
 	new_node = gc_malloc(sizeof(t_env), gc);
 	if (!new_node)
 		return (NULL);
-	key_len = ft_strlen(src->key) +1;
+	key_len = ft_strlen(src->key) + 1;
 	new_node->key = gc_malloc(key_len, gc);
 	if (!new_node->key)
 		return (NULL);
@@ -40,14 +40,16 @@ t_env	*copy_env_node(t_env *src, t_garbage **gc)
 	else
 		new_node->value = NULL;
 	new_node->next = NULL;
-	return (new_node);	
+	return (new_node);
 }
 
 size_t	max_strlen(const char *s1, const char *s2)
 {
-	size_t	len1 = 0;
-	size_t	len2 = 0;
+	size_t	len1;
+	size_t	len2;
 
+	len1 = 0;
+	len2 = 0;
 	if (s1)
 		len1 = ft_strlen(s1);
 	if (s2)
@@ -65,16 +67,15 @@ void	insert_sorted_env_node(t_env **sorted, t_env *new_node)
 
 	if (!sorted || !new_node || !new_node->key)
 		return ;
-
 	curr = *sorted;
 	prev = NULL;
 	while (curr)
 	{
 		if (!curr->key)
-			break;
+			break ;
 		n = max_strlen(new_node->key, curr->key);
 		if (ft_strncmp(new_node->key, curr->key, n) <= 0)
-			break;
+			break ;
 		prev = curr;
 		curr = curr->next;
 	}
@@ -84,7 +85,6 @@ void	insert_sorted_env_node(t_env **sorted, t_env *new_node)
 		prev->next = new_node;
 	new_node->next = curr;
 }
-
 
 // void	insert_sorted_env_node(t_env **sorted, t_env *new_node)
 // {

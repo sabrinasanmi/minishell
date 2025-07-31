@@ -88,6 +88,8 @@ char	*expand_variables(char *str, t_minishell *mini);
 char	*extract_var_name(char *str, int *pos, t_garbage **gc);
 char	*get_var_value(char *var_name, t_minishell *mini);
 char	*extract_raw_content(char *input, int start, int len, t_garbage **gc);
+char	*extract_raw_content(char *input, int start, int len, t_garbage **gc);
+char	*process_dollar_sign(char *str, int *i, char *result, t_minishell *mini);
 
 /* Protótipos das funções auxiliares de string */
 char	*join_strings(char *s1, char *s2, t_garbage **gc);
@@ -137,5 +139,7 @@ int		exec_cmd(char **args, t_env *env, t_garbage **gc);
 void	init_env_list(t_minishell *mini, char **envp);
 void	exec_input(char *input, t_minishell *mini);
 void	free_array(char **arr);
+bool	is_valid_id_export(const char *key);
+void	print_env_line(t_env *node);
 
 #endif // MINISHELL_H

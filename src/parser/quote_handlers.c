@@ -6,13 +6,13 @@
 /*   By: sabsanto <sabsanto@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/21 21:21:58 by sabsanto          #+#    #+#             */
-/*   Updated: 2025/07/22 20:47:44 by sabsanto         ###   ########.fr       */
+/*   Updated: 2025/07/31 01:37:45 by sabsanto         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char	*handle_single_quotes(char *input, int *i, t_minishell *mini) 
+char	*handle_single_quotes(char *input, int *i, t_minishell *mini)
 {
 	int		start;
 	int		len;
@@ -36,14 +36,10 @@ char	*handle_single_quotes(char *input, int *i, t_minishell *mini)
 	return (token);
 }
 
-char	*handle_double_quotes(char *input, int *i, t_minishell *mini)
+static int	find_closing_double_quote(char *input, int *i)
 {
-	int		start;
-	int		len;
-	char	*raw_token;
-	char	*expanded_token;
+	int	start;
 
-	(*i)++;
 	start = *i;
 	while (input[*i] && input[*i] != '"')
 	{
@@ -55,9 +51,23 @@ char	*handle_double_quotes(char *input, int *i, t_minishell *mini)
 	if (input[*i] != '"')
 	{
 		write(2, "minishell: syntax error: unclosed quotes\n", 42);
-		return (NULL);
+		return (-1);
 	}
-	len = *i - start;
+	return (*i - start);
+}
+
+char	*handle_double_quotes(char *input, int *i, t_minishell *mini)
+{
+	int		start;
+	int		len;
+	char	*raw_token;
+	char	*expanded_token;
+
+	(*i)++;
+	start = *i;
+	len = find_closing_double_quote(input, i);
+	if (len == -1)
+		return (NULL);
 	raw_token = extract_raw_content(input, start, len, &mini->gc);
 	if (!raw_token)
 		return (NULL);

@@ -6,7 +6,7 @@
 /*   By: sabsanto <sabsanto@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/21 21:24:01 by sabsanto          #+#    #+#             */
-/*   Updated: 2025/07/22 21:39:16 by sabsanto         ###   ########.fr       */
+/*   Updated: 2025/07/31 01:34:44 by sabsanto         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,8 +106,6 @@ char	*extract_var_name(char *str, int *pos, t_garbage **gc)
 char	*expand_variables(char *str, t_minishell *mini)
 {
 	char	*result;
-	char	*var_name;
-	char	*var_value;
 	int		i;
 
 	if (!str)
@@ -120,17 +118,7 @@ char	*expand_variables(char *str, t_minishell *mini)
 	while (str[i])
 	{
 		if (str[i] == '$')
-		{
-			i++;
-			var_name = extract_var_name(str, &i, &mini->gc);
-			if (var_name)
-			{
-				var_value = get_var_value(var_name, mini);
-				result = join_strings(result, var_value, &mini->gc);
-			}
-			else
-				result = join_strings(result, "$", &mini->gc);
-		}
+			result = process_dollar_sign(str, &i, result, mini);
 		else
 			result = append_char(result, str[i++], &mini->gc);
 	}

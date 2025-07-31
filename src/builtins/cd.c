@@ -6,7 +6,7 @@
 /*   By: makamins <makamins@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 14:39:05 by makamins          #+#    #+#             */
-/*   Updated: 2025/07/14 15:27:46 by makamins         ###   ########.fr       */
+/*   Updated: 2025/07/30 18:05:08 by makamins         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,14 +22,12 @@ char	*get_env_value(t_env *env, const char *key)
 		return (NULL);
 	return (found->value);
 }
-
 // Retorna o valor associado a uma variável de ambiente, ou NULL se não existir.
-
 
 static char	*get_target_path(char **argv, t_minishell *mini)
 {
 	char	*home;
-	
+
 	if (argv[1])
 		return (argv[1]);
 	home = get_env_value(mini->env, "HOME");
@@ -42,11 +40,10 @@ static char	*get_target_path(char **argv, t_minishell *mini)
 }
 // Retorna o path alvo do cd: argv[1] se existir, senão busca a HOME
 
-
 static char	*change_dir(const char *path, t_minishell *mini)
 {
 	char	*cwd;
-	
+
 	if (chdir(path) != 0)
 	{
 		write(2, "cd: ", 4);
@@ -63,7 +60,8 @@ static char	*change_dir(const char *path, t_minishell *mini)
 	return (cwd);
 }
 
-static void	update_pwd_vars(t_minishell *mini, const char *oldpwd, const char *newpwd)
+static void	update_pwd_vars(t_minishell *mini,
+	const char *oldpwd, const char *newpwd)
 {
 	set_env_value(&mini->env, "OLDPWD", oldpwd, &mini->gc);
 	set_env_value(&mini->env, "PWD", newpwd, &mini->gc);

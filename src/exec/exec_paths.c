@@ -6,7 +6,7 @@
 /*   By: makamins <makamins@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 15:07:43 by makamins          #+#    #+#             */
-/*   Updated: 2025/07/17 19:13:35 by makamins         ###   ########.fr       */
+/*   Updated: 2025/07/30 19:06:36 by makamins         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ char	*find_cmd_in_paths(char **paths, char *cmd, t_garbage **gc)
 	}
 	return (NULL);
 }
+
 // Extrai o valor da variável PATH da env list, divide nos diretórios,
 // e registra cada string no garbage collector.
 char	**get_paths(t_env *env, t_garbage **gc)
@@ -50,7 +51,7 @@ char	**get_paths(t_env *env, t_garbage **gc)
 	int		i;
 	t_env	*path_node;
 	char	**paths;
-	
+
 	path_node = find_env_key(env, "PATH");
 	if (!path_node || !path_node->value)
 		return (NULL);
@@ -71,7 +72,7 @@ char	*get_cmd_path(char *cmd, t_env *env, t_garbage **gc)
 {
 	char	**paths;
 	char	*cmd_path;
-	
+
 	if (!cmd || !cmd[0])
 		return (NULL);
 	if (access(cmd, X_OK) == 0)
@@ -89,4 +90,3 @@ char	*get_cmd_path(char *cmd, t_env *env, t_garbage **gc)
 		return (NULL);
 	return (cmd_path);
 }
-

@@ -6,7 +6,7 @@
 /*   By: makamins <makamins@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 15:35:04 by makamins          #+#    #+#             */
-/*   Updated: 2025/07/30 17:33:34 by makamins         ###   ########.fr       */
+/*   Updated: 2025/07/30 19:07:22 by makamins         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ char	is_operator(char c)
 	return (c == '>' || c == '<' || c == '|');
 }
 
-char *ft_strjoin_and_free(char *s1, char *s2, int free_s)
+char	*ft_strjoin_and_free(char *s1, char *s2, int free_s)
 {
 	char	*str;
 
@@ -81,19 +81,4 @@ bool	is_numeric_arg(char *str)
 		i++;
 	}
 	return (true);
-}
-
-void	free_array(char **arr)
-{
-	int	i;
-
-	if (!arr)
-		return ;
-	i = 0;
-	while (arr[i])
-	{
-		free(arr[i]);
-		i++;
-	}
-	free(arr);
 }

@@ -1,39 +1,42 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   echo.c                                             :+:      :+:    :+:   */
+/*   utils_export.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: makamins <makamins@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/04 12:16:50 by makamins          #+#    #+#             */
-/*   Updated: 2025/07/30 18:06:10 by makamins         ###   ########.fr       */
+/*   Created: 2025/07/30 18:08:47 by makamins          #+#    #+#             */
+/*   Updated: 2025/07/30 18:09:13 by makamins         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "garbage_collector.h"
 
-int	ft_echo(char **argv, t_minishell *mini)
+bool	is_valid_id_export(const char *key)
 {
-	int		i;
-	bool	new_line;
+	int	i;
 
-	(void)mini;
-	i = 1;
-	new_line = true;
-	while (argv[i] && !ft_strncmp(argv[i], "-n", 3))
+	if (!key || key[0] == '\0')
+		return (false);
+	if (!(ft_isalpha(key[0]) || key[0] != '_'))
+		return (false);
+	i = 0;
+	while (key[i] && key[i] != '=')
 	{
-		new_line = false;
+		if (!(ft_isalnum(key[i]) || key[i] == '_'))
+			return (false);
 		i++;
 	}
-	while (argv[i])
-	{
-		write (1, argv[i], ft_strlen(argv[i]));
-		if (argv[i + 1])
-			write(1, " ", 1);
-		i++;
-	}
-	if (new_line)
-		write(1, "\n", 1);
-	return (0);
+	return (true);
+}
+
+void	print_env_line(t_env *node)
+{
+	if (!node || !node->key)
+		return ;
+	printf("declare -x %s", node->key);
+	if (node->value)
+		printf("=\"%s\"", node->value);
+	printf("\n");
 }

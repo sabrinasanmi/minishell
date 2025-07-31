@@ -6,7 +6,7 @@
 /*   By: makamins <makamins@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 16:00:55 by makamins          #+#    #+#             */
-/*   Updated: 2025/07/14 15:29:15 by makamins         ###   ########.fr       */
+/*   Updated: 2025/07/30 18:11:38 by makamins         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ void	remove_env_node(t_env **env, const char *key)
 {
 	t_env	*curr;
 	t_env	*prev;
-	
+
 	if (!env || !*env)
 		return ;
 	curr = *env;
@@ -59,7 +59,7 @@ int	ft_unset(char **argv, t_minishell *mini)
 {
 	int	i;
 	int	status;
-	
+
 	if (!argv || !mini)
 		return (1);
 	i = 1;
