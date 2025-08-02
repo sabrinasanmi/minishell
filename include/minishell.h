@@ -9,13 +9,13 @@
 # include <stdbool.h>
 # include <stdarg.h>
 # include <sys/wait.h>
+# include <fcntl.h>
 
 # include <readline/readline.h>
 # include <readline/history.h>
 
 /*Includes de sistema que vamos usar em breve
 # include <sys/stat.h>
-# include <fcntl.h>
 # include <signal.h>
 # include <errno.h>*/
 
@@ -45,6 +45,12 @@ typedef enum e_tokens
 	T_REDIR_APPEND,
 	T_REDIR_HEREDOC
 }	t_tokens;
+
+typedef struct s_token {
+	t_tokens		type;     // T_WORD, T_PIPE, etc.
+	char			*value;   // "cat", "|", "arquivo.txt", etc.
+	struct s_token	*next;
+} t_token;
 
 typedef struct s_redir
 {
@@ -76,6 +82,16 @@ typedef struct s_minishell
 	int			out_fd;		// STDOUT original (para restaurar)
 	t_garbage	*gc;
 }	t_minishell;
+
+typedef struct s_exec_data
+{
+	int			num_cmds;
+	int			i;
+	int			pipe_fd[2];
+	int			prev_read_fd;
+	t_commands	*cmd;
+	pid_t		pid;
+}	t_exec_data;
 
 /* Protótipos das funções de parsing */
 void	tokenize(char *input);
@@ -141,5 +157,15 @@ void	exec_input(char *input, t_minishell *mini);
 void	free_array(char **arr);
 bool	is_valid_id_export(const char *key);
 void	print_env_line(t_env *node);
+
+/* Execução de pipe*/
+
+void	setup_initial_vars(t_exec_data *data, t_commands *cmd_list);
+int		create_pipe_if_needed(t_commands *cmd, int pipe_fd[2]);
+void	child_procces_logic(t_commands *cmd, int prev_read_fd, 
+	int pipe_fd[2], t_minishell *mini);
+void	parent_procces_logic(int *prev_read_fd,
+	int pipe_fd[2], t_commands *cmd);
+int		exec_single_command(t_exec_data *data, t_minishell *mini);
 
 #endif // MINISHELL_H
