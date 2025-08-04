@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: makamins <makamins@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sabsanto <sabsanto@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 20:04:28 by sabsanto          #+#    #+#             */
-/*   Updated: 2025/08/01 14:51:20 by makamins         ###   ########.fr       */
+/*   Updated: 2025/08/04 14:52:41 by sabsanto         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,7 +176,7 @@ t_token	*tokenize(char *input, t_minishell *mini)
 }
 
 // Função de compatibilidade - mantém a interface antiga para debug
-void	tokenize_debug(char *input)
+/*void	tokenize_debug(char *input)
 {
 	t_minishell	mini = {0};
 	t_token		*tokens;
@@ -185,4 +185,12 @@ void	tokenize_debug(char *input)
 	tokens = tokenize(input, &mini);
 
 	gc_free_all(&mini.gc);
+}*/
+void	tokenize_debug(void)
+{
+	t_minishell	mini = {0};
+
+	init_env_list(&mini, __environ);
+	gc_free_all(&mini.gc);
 }
+
