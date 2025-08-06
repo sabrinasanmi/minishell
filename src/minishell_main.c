@@ -3,41 +3,152 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_main.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sabsanto <sabsanto@student.42.fr>          +#+  +:+       +#+        */
+/*   By: makamins <makamins@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 18:49:25 by sabsanto          #+#    #+#             */
-/*   Updated: 2025/07/31 18:38:34 by sabsanto         ###   ########.fr       */
+/*   Updated: 2025/08/05 15:56:07 by makamins         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "garbage_collector.h"
 
+// Verifica se o comando é um builtin
+static int	is_builtin(char *cmd)
+{
+	if (!cmd)
+		return (0);
+	if (ft_strncmp(cmd, "echo", 5) == 0)
+		return (1);
+	if (ft_strncmp(cmd, "cd", 3) == 0)
+		return (1);
+	if (ft_strncmp(cmd, "pwd", 4) == 0)
+		return (1);
+	if (ft_strncmp(cmd, "export", 7) == 0)
+		return (1);
+	if (ft_strncmp(cmd, "unset", 6) == 0)
+		return (1);
+	if (ft_strncmp(cmd, "env", 4) == 0)
+		return (1);
+	if (ft_strncmp(cmd, "exit", 5) == 0)
+		return (1);
+	return (0);
+}
 
-// Função temporária para executar comandos simples (sem pipes)
+// Executa um builtin
+static int	execute_builtin(t_commands *cmd, t_minishell *mini)
+{
+	if (ft_strncmp(cmd->argv[0], "echo", 5) == 0)
+		return (ft_echo(cmd->argv, mini));
+	else if (ft_strncmp(cmd->argv[0], "cd", 3) == 0)
+		return (ft_cd(cmd->argv, mini));
+	else if (ft_strncmp(cmd->argv[0], "pwd", 4) == 0)
+		return (ft_pwd(mini));
+	else if (ft_strncmp(cmd->argv[0], "export", 7) == 0)
+		return (ft_export(cmd->argv, mini));
+	else if (ft_strncmp(cmd->argv[0], "unset", 6) == 0)
+		return (ft_unset(cmd->argv, mini));
+	else if (ft_strncmp(cmd->argv[0], "env", 4) == 0)
+		return (ft_env(mini));
+	else if (ft_strncmp(cmd->argv[0], "exit", 5) == 0)
+		return (ft_exit(cmd->argv, mini));
+	return (0);
+}
+
+// Executa comandos simples (sem pipes)
 static void	execute_simple_command(t_commands *cmd, t_minishell *mini)
 {
+	pid_t	pid;
+	int		status;
+	char	**envp;
+
 	if (!cmd || !cmd->argv || !cmd->argv[0])
 		return ;
 
-	// Verifica se é um builtin
-	if (ft_strncmp(cmd->argv[0], "echo", 5) == 0)
-		mini->last_exit = ft_echo(cmd->argv, mini);
-	else if (ft_strncmp(cmd->argv[0], "cd", 3) == 0)
-		mini->last_exit = ft_cd(cmd->argv, mini);
-	else if (ft_strncmp(cmd->argv[0], "pwd", 4) == 0)
-		mini->last_exit = ft_pwd(mini);
-	else if (ft_strncmp(cmd->argv[0], "export", 7) == 0)
-		mini->last_exit = ft_export(cmd->argv, mini);
-	else if (ft_strncmp(cmd->argv[0], "unset", 6) == 0)
-		mini->last_exit = ft_unset(cmd->argv, mini);
-	else if (ft_strncmp(cmd->argv[0], "env", 4) == 0)
-		mini->last_exit = ft_env(mini);
-	else if (ft_strncmp(cmd->argv[0], "exit", 5) == 0)
-		mini->last_exit = ft_exit(cmd->argv, mini);
+	// Se é um builtin, executa diretamente
+	if (is_builtin(cmd->argv[0]))
+	{
+		// Lidar com redirecionamentos para builtins
+		int saved_stdin = -1;
+		int saved_stdout = -1;
+		
+		// Salva file descriptors originais se houver redirecionamentos
+		if (cmd->redir)
+		{
+			saved_stdin = dup(STDIN_FILENO);
+			saved_stdout = dup(STDOUT_FILENO);
+		}
+		
+		// Aplica redirecionamentos
+		if (cmd->redir && handle_redirections(cmd->redir, mini) == -1)
+		{
+			mini->last_exit = 1;
+			return ;
+		}
+		
+		// Executa o builtin
+		mini->last_exit = execute_builtin(cmd, mini);
+		
+		// Restaura file descriptors originais
+		if (saved_stdin != -1)
+		{
+			dup2(saved_stdin, STDIN_FILENO);
+			close(saved_stdin);
+		}
+		if (saved_stdout != -1)
+		{
+			dup2(saved_stdout, STDOUT_FILENO);
+			close(saved_stdout);
+		}
+	}
 	else
-		// Comando externo
-		mini->last_exit = exec_cmd(cmd->argv, mini->env, &mini->gc);
+	{
+		// Comando externo - fork necessário
+		pid = fork();
+		if (pid < 0)
+		{
+			perror("fork");
+			mini->last_exit = 1;
+			return ;
+		}
+		else if (pid == 0)
+		{
+			// Processo filho
+			// Aplica redirecionamentos
+			if (cmd->redir && handle_redirections(cmd->redir, mini) == -1)
+				exit(1);
+			
+			// Prepara o ambiente e executa
+			envp = env_list_to_array(mini->env, &mini->gc);
+			if (!envp)
+				exit(1);
+			
+			// Tenta encontrar e executar o comando
+			char *cmd_path = get_cmd_path(cmd->argv[0], mini->env, &mini->gc);
+			if (!cmd_path)
+			{
+				printf("%s: command not found\n", cmd->argv[0]);
+				exit(127);
+			}
+			
+			execve(cmd_path, cmd->argv, envp);
+			perror("execve");
+			exit(126);
+		}
+		else
+		{
+			// Processo pai espera
+			if (waitpid(pid, &status, 0) == -1)
+			{
+				perror("waitpid");
+				mini->last_exit = 1;
+			}
+			else if (WIFEXITED(status))
+			{
+				mini->last_exit = WEXITSTATUS(status);
+			}
+		}
+	}
 }
 
 // Processa a linha de comando
@@ -46,7 +157,7 @@ static void	process_command_line(char *input, t_minishell *mini)
 	t_token		*tokens;
 	t_commands	*commands;
 
-	// Tokeniza a entrada (usando a função refatorada)
+	// Tokeniza a entrada
 	tokens = tokenize(input, mini);
 	if (!tokens)
 		return ;
@@ -56,20 +167,29 @@ static void	process_command_line(char *input, t_minishell *mini)
 	if (!commands)
 		return ;
 	
-	// Por enquanto, executa apenas comandos simples (sem pipes)
+	// Debug: imprime a estrutura de comandos
+	print_command_structure(commands);
+	
+	// Executa os comandos
 	if (commands && !commands->next)
+	{
+		// Comando único (sem pipes)
 		execute_simple_command(commands, mini);
+	}
 	else if (commands && commands->next)
-		printf("Pipes ainda não implementados!\n");
+	{
+		// Pipeline de comandos
+		printf("Executando pipeline...\n");
+		execute_pipeline(commands, mini);
+	}
 }
 
-// limpeza libreadline e libtinfo 
+// Limpeza do readline
 static void cleanup_readline(void)
 {
-    clear_history();
-    rl_clear_pending_input();
-    rl_cleanup_after_signal();
-    rl_reset_terminal(NULL);
+	clear_history();
+	rl_clear_pending_input();
+	rl_cleanup_after_signal();
 }
 
 int	main(void)
@@ -99,16 +219,18 @@ int	main(void)
 		}
 		free(input);
 		
-		// Limpa o garbage collector a cada comando
-		//gc_free_all(&mini.gc);
-		// Re-inicializa o ambiente após limpar o GC
-		//init_env_list(&mini, __environ);
+		// Limpa apenas os comandos, mantém o ambiente
+		t_commands *cmd = mini.commands;
+		while (cmd)
+		{
+			t_commands *next = cmd->next;
+			cmd = next;
+		}
+		mini.commands = NULL;
 	}
 	
-	// Chama a função de limpeza
-    cleanup_readline();
-	// Limpa tudo antes de sair
+	// Limpeza final
+	cleanup_readline();
 	gc_free_all(&mini.gc);
 	return (mini.last_exit);
 }
-

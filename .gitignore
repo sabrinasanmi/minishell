@@ -4,3 +4,7 @@ libft/libft.a
 # Ignorar o executável minishell
 minishell
 checklist.txt
+
+# Ignorar arquivos objeto (.o) e de dependência (.d)
+*.o
+*.d

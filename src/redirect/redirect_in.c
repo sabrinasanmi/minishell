@@ -6,7 +6,7 @@
 /*   By: makamins <makamins@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 14:36:33 by makamins          #+#    #+#             */
-/*   Updated: 2025/07/31 16:23:37 by makamins         ###   ########.fr       */
+/*   Updated: 2025/08/05 14:47:22 by makamins         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,11 +40,16 @@ int	setup_input_redirections(t_commands *cmd, t_minishell *mini)
 	t_redir	*redir;
 	
 	redir = cmd->redir;
-	while (redir != NULL)
+	while (redir)
 	{
 		if (redir->type == REDIR_IN)
 		{
 			if (handle_input_redirection(redir, mini) == -1)
+				return (-1);
+		}
+		else if (redir->type == REDIR_HEREDOC)
+		{
+			if (handle_heredoc_redirection(redir, mini) == -1)
 				return (-1);
 		}
 		redir = redir->next;

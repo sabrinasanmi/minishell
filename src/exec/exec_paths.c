@@ -6,7 +6,7 @@
 /*   By: makamins <makamins@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 15:07:43 by makamins          #+#    #+#             */
-/*   Updated: 2025/07/30 19:06:36 by makamins         ###   ########.fr       */
+/*   Updated: 2025/08/05 16:39:31 by makamins         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ char	*find_cmd_in_paths(char **paths, char *cmd, t_garbage **gc)
 	while (paths[i])
 	{
 		full_path = construct_path(paths[i], cmd, gc);
+		printf("DEBUG: trying %s\n", full_path);
 		if (full_path && access(full_path, X_OK) == 0)
 			return (full_path);
 		i++;
@@ -46,6 +47,8 @@ char	*find_cmd_in_paths(char **paths, char *cmd, t_garbage **gc)
 
 // Extrai o valor da variável PATH da env list, divide nos diretórios,
 // e registra cada string no garbage collector.
+
+
 char	**get_paths(t_env *env, t_garbage **gc)
 {
 	int		i;
@@ -75,6 +78,7 @@ char	*get_cmd_path(char *cmd, t_env *env, t_garbage **gc)
 
 	if (!cmd || !cmd[0])
 		return (NULL);
+	printf("DEBUG: acesso direto a '%s'? -> %d\n", cmd, access(cmd, X_OK));
 	if (access(cmd, X_OK) == 0)
 	{
 		cmd_path = ft_strdup(cmd);
@@ -84,7 +88,11 @@ char	*get_cmd_path(char *cmd, t_env *env, t_garbage **gc)
 	}
 	paths = get_paths(env, gc);
 	if (!paths)
+	{
+		printf("DEBUG: get_paths retornou NULL\n");
 		return (NULL);
+	}
+	printf("DEBUG: chamando find_cmd_in_paths() com cmd = '%s'\n", cmd);
 	cmd_path = find_cmd_in_paths(paths, cmd, gc);
 	if (cmd_path && !gc_add_ptr(cmd_path, gc))
 		return (NULL);

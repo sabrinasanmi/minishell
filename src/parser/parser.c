@@ -6,11 +6,12 @@
 /*   By: sabsanto <sabsanto@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 20:04:28 by sabsanto          #+#    #+#             */
-/*   Updated: 2025/08/04 14:52:41 by sabsanto         ###   ########.fr       */
+/*   Updated: 2025/08/04 15:14:07 by sabsanto         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
 // Cria um novo token
 static t_token	*create_token(char *value, t_tokens type, t_garbage **gc)
 {
@@ -63,10 +64,10 @@ static t_tokens	get_operator_type(char *input, int pos)
 	return (T_WORD);
 }
 
-static void	process_operator_token(char *input, int *i, t_tokens **tokens, t_garbage **gc)
+static void	process_operator_token(char *input, int *i, t_token **tokens, t_garbage **gc)
 {
 	t_tokens	type;
-	t_tokens		*new_token;
+	t_token		*new_token;
 
 	type = get_operator_type(input, *i);
 	if ((input[*i] == '>' || input[*i] == '<') && input[*i + 1] == input[*i])
@@ -138,19 +139,22 @@ static void	process_word_token(char *input, int *i, int len, t_minishell *mini, 
 
 t_token	*tokenize(char *input, t_minishell *mini)
 {
-	t_token	*tokens;
-	int		i;
-	int		len;
+	t_token		*tokens;
+	int			i;
+	int			len;
+	t_minishell	temp_mini;
 
 	if (!input)
 		return (NULL);
+		
 	// Se mini não foi passado, cria um temporário
-	t_minishell temp_mini = {0};
+	temp_mini = (t_minishell){0};
 	if (!mini)
 	{
 		mini = &temp_mini;
 		init_env_list(mini, __environ);
 	}
+	
 	tokens = NULL;
 	i = 0;
 	len = ft_strlen(input);
@@ -174,23 +178,3 @@ t_token	*tokenize(char *input, t_minishell *mini)
 
 	return (tokens);
 }
-
-// Função de compatibilidade - mantém a interface antiga para debug
-/*void	tokenize_debug(char *input)
-{
-	t_minishell	mini = {0};
-	t_token		*tokens;
-
-	init_env_list(&mini, __environ);
-	tokens = tokenize(input, &mini);
-
-	gc_free_all(&mini.gc);
-}*/
-void	tokenize_debug(void)
-{
-	t_minishell	mini = {0};
-
-	init_env_list(&mini, __environ);
-	gc_free_all(&mini.gc);
-}
-

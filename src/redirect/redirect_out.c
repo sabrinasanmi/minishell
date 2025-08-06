@@ -6,7 +6,7 @@
 /*   By: makamins <makamins@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 13:21:05 by makamins          #+#    #+#             */
-/*   Updated: 2025/08/01 15:15:06 by makamins         ###   ########.fr       */
+/*   Updated: 2025/08/05 14:52:34 by makamins         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ int	setup_output_redirection(t_redir *redir)
 	return (0);
 }
 
-int	handle_redirections(t_redir *redir_list)
+int	handle_redirections(t_redir *redir_list, t_minishell *mini)
 {
 	while (redir_list)
 	{
@@ -47,7 +47,16 @@ int	handle_redirections(t_redir *redir_list)
 			if (setup_output_redirection(redir_list) == -1)
 				return (-1);
 		}
-		// (aqui vai IN e HEREDOC depois)
+		else if (redir_list->type == REDIR_IN)
+		{
+			if (handle_input_redirection(redir_list, mini) == -1)
+				return (-1);
+		}
+		else if (redir_list->type == REDIR_HEREDOC)
+		{
+			if (handle_heredoc_redirection(redir_list, mini) == -1)
+				return (-1);
+		}
 		redir_list = redir_list->next;
 	}
 	return (0);
