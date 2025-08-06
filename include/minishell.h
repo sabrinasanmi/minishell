@@ -9,13 +9,13 @@
 # include <stdbool.h>
 # include <stdarg.h>
 # include <sys/wait.h>
-# include <fcntl.h>
 
 # include <readline/readline.h>
 # include <readline/history.h>
 
 /*Includes de sistema que vamos usar em breve
 # include <sys/stat.h>
+# include <fcntl.h>
 # include <signal.h>
 # include <errno.h>*/
 
@@ -48,8 +48,8 @@ typedef enum e_tokens
 
 typedef struct s_token
 {
-	t_tokens		type;     // T_WORD, T_PIPE, etc.
-	char			*value;   // "cat", "|", "arquivo.txt", etc.
+	char			*value;
+	t_tokens		type;
 	struct s_token	*next;
 }	t_token;
 
@@ -84,32 +84,11 @@ typedef struct s_minishell
 	t_garbage	*gc;
 }	t_minishell;
 
-typedef struct s_exec_data
-{
-	int			num_cmds;
-	int			i;
-	int			pipe_fd[2];
-	int			prev_read_fd;
-	t_commands	*cmd;
-	pid_t		pid;
-}	t_exec_data;
-
 /* Protótipos das funções de parsing */
-t_token	*tokenize(char *input, t_minishell *mini);
+void	tokenize(char *input);
 char	*handle_single_quotes(char *input, int *i, t_minishell *mini);
 char	*handle_double_quotes(char *input, int *i, t_minishell *mini);
 char	*extract_quoted_token(char *input, int *i, t_minishell *mini);
-
-/* Funções do command_builder.c */
-t_commands	*create_command_node(t_garbage **gc);
-t_redir		*create_redir_node(t_redir_type type, char *file, t_garbage **gc);
-void		add_redir_to_command(t_commands *cmd, t_redir *new_redir);
-int			add_arg_to_command(t_commands *cmd, char *arg, t_garbage **gc);
-void		add_command_to_list(t_commands **list, t_commands *new_cmd);
-
-/* Funções do token_parser.c */
-t_commands	*parse_tokens_to_commands(t_token *tokens, t_garbage **gc);
-void		print_command_structure(t_commands *cmd_list);
 
 /* Protótipos das funções de expansão */
 char	*expand_variables(char *str, t_minishell *mini);
@@ -169,24 +148,5 @@ void	exec_input(char *input, t_minishell *mini);
 void	free_array(char **arr);
 bool	is_valid_id_export(const char *key);
 void	print_env_line(t_env *node);
-
-/* Execução de pipe*/
-int		count_commands(t_commands *cmd_list);
-void	setup_initial_vars(t_exec_data *data, t_commands *cmd_list);
-int		create_pipe_if_needed(t_commands *cmd, int pipe_fd[2]);
-void	child_procces_logic(t_commands *cmd, int prev_read_fd, 
-			int pipe_fd[2], t_minishell *mini);
-void	parent_procces_logic(int *prev_read_fd,
-			int pipe_fd[2], t_commands *cmd);
-int		exec_single_command(t_exec_data *data, t_minishell *mini);
-void	wait_all_children(int n);
-int		execute_pipeline(t_commands *cmd_list, t_minishell *mini);
-
-/* Redirecionamentos */
-int		handle_redirections(t_redir *redir_list, t_minishell *mini);
-int		setup_output_redirection(t_redir *redir);
-int		handle_input_redirection(t_redir *redir, t_minishell *mini);
-int		setup_input_redirections(t_commands *cmd, t_minishell *mini);
-int		handle_heredoc_redirection(t_redir *redir, t_minishell *mini);
 
 #endif // MINISHELL_H

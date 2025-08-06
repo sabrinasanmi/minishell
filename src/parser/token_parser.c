@@ -6,19 +6,7 @@
 /*   By: sabsanto <sabsanto@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 16:53:15 by sabsanto          #+#    #+#             */
-/*   Updated: 2025/08/04 15:20:38 by sabsanto         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   token_parser.c                                     :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: makamins <makamins@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/31 16:53:15 by sabsanto          #+#    #+#             */
-/*   Updated: 2025/08/04 17:00:00 by makamins         ###   ########.fr       */
+/*   Updated: 2025/07/31 18:45:33 by sabsanto         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,13 +44,10 @@ static int	handle_redirection(t_token **current, t_commands *cmd, t_garbage **gc
 		write(2, "minishell: syntax error near unexpected token\n", 47);
 		return (1);
 	}
-	
 	new_redir = create_redir_node(redir_type, file_token->value, gc);
 	if (!new_redir)
 		return (1);
-		
 	add_redir_to_command(cmd, new_redir);
-	
 	// Avança para o próximo token após o arquivo
 	*current = file_token->next;
 	return (0);
@@ -95,7 +80,6 @@ static t_commands	*parse_single_command(t_token **tokens, t_garbage **gc)
 		else
 			current = current->next;
 	}
-	
 	*tokens = current;
 	return (cmd);
 }
@@ -116,12 +100,10 @@ t_commands	*parse_tokens_to_commands(t_token *tokens, t_garbage **gc)
 		if (!new_cmd)
 			return (NULL);
 		add_command_to_list(&cmd_list, new_cmd);
-		
 		// Se encontrou um pipe, avança para o próximo comando
 		if (current && current->type == T_PIPE)
 			current = current->next;
 	}
-	
 	return (cmd_list);
 }
 
@@ -135,13 +117,9 @@ void	print_command_structure(t_commands *cmd_list)
 
 	cmd_num = 1;
 	cmd = cmd_list;
-	
-	printf("\n=== Command Structure ===\n");
-	
 	while (cmd)
 	{
 		printf("Command %d:\n", cmd_num);
-		
 		// Imprime argumentos
 		if (cmd->argv)
 		{
@@ -153,11 +131,6 @@ void	print_command_structure(t_commands *cmd_list)
 				arg_num++;
 			}
 		}
-		else
-		{
-			printf("  No arguments\n");
-		}
-		
 		// Imprime redirecionamentos
 		if (cmd->redir)
 		{
@@ -178,18 +151,9 @@ void	print_command_structure(t_commands *cmd_list)
 				redir = redir->next;
 			}
 		}
-		else
-		{
-			printf("  No redirections\n");
-		}
-		
-		// Indica se há mais comandos (pipe)
-		if (cmd->next)
-			printf("  | (pipe to next command)\n");
-			
 		cmd = cmd->next;
 		cmd_num++;
+		if (cmd)
+			printf("  |\n");
 	}
-	
-	printf("=== End of Structure ===\n\n");
 }

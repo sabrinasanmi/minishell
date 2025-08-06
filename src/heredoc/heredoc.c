@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: makamins <makamins@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sabsanto <sabsanto@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/01 15:47:21 by makamins          #+#    #+#             */
-/*   Updated: 2025/08/05 14:37:42 by makamins         ###   ########.fr       */
+/*   Updated: 2025/08/05 23:11:47 by sabsanto         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ static int	heredoc_loop(int write_fd, const char *delimiter, t_minishell *mini)
 
 int	handle_heredoc(const char *delimiter, t_minishell *mini)
 {
-	int	pipe_fd[0];
+	int	pipe_fd[2];
 
 	if (pipe(pipe_fd) == -1)
 	{

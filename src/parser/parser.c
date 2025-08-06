@@ -6,12 +6,11 @@
 /*   By: sabsanto <sabsanto@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 20:04:28 by sabsanto          #+#    #+#             */
-/*   Updated: 2025/08/04 15:14:07 by sabsanto         ###   ########.fr       */
+/*   Updated: 2025/07/31 18:43:33 by sabsanto         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
 // Cria um novo token
 static t_token	*create_token(char *value, t_tokens type, t_garbage **gc)
 {
@@ -139,22 +138,19 @@ static void	process_word_token(char *input, int *i, int len, t_minishell *mini, 
 
 t_token	*tokenize(char *input, t_minishell *mini)
 {
-	t_token		*tokens;
-	int			i;
-	int			len;
-	t_minishell	temp_mini;
+	t_token	*tokens;
+	int		i;
+	int		len;
 
 	if (!input)
 		return (NULL);
-		
 	// Se mini não foi passado, cria um temporário
-	temp_mini = (t_minishell){0};
+	t_minishell temp_mini = {0};
 	if (!mini)
 	{
 		mini = &temp_mini;
 		init_env_list(mini, __environ);
 	}
-	
 	tokens = NULL;
 	i = 0;
 	len = ft_strlen(input);
@@ -177,4 +173,16 @@ t_token	*tokenize(char *input, t_minishell *mini)
 		gc_free_all(&mini->gc);
 
 	return (tokens);
+}
+
+// Função de compatibilidade - mantém a interface antiga para debug
+void	tokenize_debug(char *input)
+{
+	t_minishell	mini = {0};
+	t_token		*tokens;
+
+	init_env_list(&mini, __environ);
+	tokens = tokenize(input, &mini);
+
+	gc_free_all(&mini.gc);
 }
