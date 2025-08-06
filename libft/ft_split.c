@@ -6,7 +6,7 @@
 /*   By: makamins <makamins@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 20:55:45 by makamins          #+#    #+#             */
-/*   Updated: 2024/11/06 19:46:10 by makamins         ###   ########.fr       */
+/*   Updated: 2025/08/06 13:12:59 by makamins         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,20 +15,17 @@
 static int	count_words(const char *s, char c)
 {
 	int	count;
-	int	in_word;
+	int	i;
 
-	count = 0;
-	in_word = 0;
-	while (*s)
+	if (!s)
+		return (0);
+	count = 1;
+	i = 0;
+	while (s[i])
 	{
-		if (*s != c && in_word == 0)
-		{
+		if (s[i] == c)
 			count++;
-			in_word = 1;
-		}
-		else if (*s == c)
-			in_word = 0;
-		s++;
+		i++;
 	}
 	return (count);
 }
@@ -69,23 +66,20 @@ static int	extract_words(char **result, const char *s, char c)
 	i = 0;
 	while (*s)
 	{
-		if (*s != c)
+		len = 0;
+		while (s[len] && s[len] != c)
+			len++;
+		result[i] = copy_word(s, len);
+		if (!result[i])
 		{
-			len = 0;
-			while (s[len] && s[len] != c)
-				len++;
-			result[i] = copy_word(s, len);
-			if (!result[i])
-			{
-				free_split(result, i);
-				return (0);
-			}
-			i++;
-			s += len;
+			free_split(result, i);
+			return (0);
 		}
-		else
+		i++;
+		s += len;
+		if (*s == c)
 			s++;
-	}
+		}
 	result[i] = NULL;
 	return (1);
 }
